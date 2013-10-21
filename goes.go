@@ -9,7 +9,7 @@ import (
   "net/http"
 )
 
-import "./types"
+import "github.com/wfarr/es"
 
 var ip string
 var port string
@@ -19,6 +19,8 @@ func main() {
   flag.StringVar(&port, "port", "9200", "The port elasticsearch is running on")
 
   flag.Parse()
+
+  es.Noop()
 
   switch flag.Arg(0) {
     case "status":
