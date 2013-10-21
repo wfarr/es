@@ -35,7 +35,7 @@ func usage() {
     flag.Parse()
   }
 
-  fmt.Fprintf(os.Stderr, "%s [flags] [command] <[subcommand]>\n\n", os.Args[0])
+  fmt.Fprintf(os.Stderr, "Usage: %s [flags] [command] <[subcommand]>\n\n", os.Args[0])
   fmt.Fprintf(os.Stderr, "FLAGS\n\n")
   flag.PrintDefaults()
   fmt.Fprintf(os.Stderr, "\n")
