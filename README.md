@@ -3,7 +3,7 @@
 ## Usage
 
 ```
-Usage: es [flags] [command] <[subcommand]>
+Usage: /es [flags] [command] <[subcommand]>
 
 FLAGS
 
@@ -12,7 +12,6 @@ FLAGS
 
 COMMANDS
 
-    top      display overall health
-
+    status      display overall health
 
 ```

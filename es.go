@@ -19,9 +19,20 @@ func main() {
   flag.Parse()
 
   switch flag.Arg(0) {
-    case "top":
-      health, state := getHealth(), getState()
-      fmt.Printf("Cluster `%s` is %s\n", state.ClusterName, health.Status)
+    case "status":
+      health, state, settings := getHealth(), getState(), getSettings()
+      var allocation string
+
+      if (settings.Persistent.AllocationDisabled || settings.Transient.AllocationDisabled) {
+        allocation = "disabled"
+      } else {
+        allocation = "enabled"
+      }
+
+      fmt.Printf("Cluster `%s` is %s\nAllocation: %s\n",
+        state.ClusterName,
+        health.Status,
+        allocation)
     default:
       usage()
       os.Exit(1)
@@ -40,7 +51,7 @@ func usage() {
   flag.PrintDefaults()
   fmt.Fprintf(os.Stderr, "\n")
   fmt.Fprintf(os.Stderr, "COMMANDS\n\n")
-  fmt.Fprintf(os.Stderr, "    top      display overall health\n\n")
+  fmt.Fprintf(os.Stderr, "    status      display overall health\n\n")
 }
 
 func getHealth() (data ClusterHealth) {
@@ -50,6 +61,11 @@ func getHealth() (data ClusterHealth) {
 
 func getState() (data ClusterState) {
   get("/_cluster/state", &data)
+  return
+}
+
+func getSettings() (data ClusterSettings) {
+  get("/_cluster/settings", &data)
   return
 }
 
@@ -93,4 +109,13 @@ type ClusterHealth struct {
 type ClusterState struct {
   ClusterName string `json:"cluster_name"`
   MasterNode  string `json:"master_node"`
+}
+
+type ClusterSettings struct {
+  Persistent SettingsYo `json:"persistent"`
+  Transient  SettingsYo `json:"transient"`
+}
+
+type SettingsYo struct {
+  AllocationDisabled bool `json:"allocation_disabled"`
 }
