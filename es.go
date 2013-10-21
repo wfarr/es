@@ -9,9 +9,12 @@ import (
   "net/http"
 )
 
+var ip string
+var port string
+
 func main() {
-/*  ip := flag.String("ip", "127.0.0.1", "The host elasticsearch is running on")*/
-/*  port := flag.String("port", "9200", "The port elasticsearch is running on")*/
+  flag.StringVar(&ip, "ip", "127.0.0.1", "The host elasticsearch is running on")
+  flag.StringVar(&port, "port", "9200", "The port elasticsearch is running on")
 
   flag.Parse()
 
@@ -20,11 +23,24 @@ func main() {
       health, state := getHealth(), getState()
       fmt.Printf("Cluster `%s` is %s\n", state.ClusterName, health.Status)
     default:
-      flag.Usage()
+      usage()
       os.Exit(1)
   }
 
   os.Exit(0)
+}
+
+func usage() {
+  if !flag.Parsed() {
+    flag.Parse()
+  }
+
+  fmt.Fprintf(os.Stderr, "%s [flags] [command] <[subcommand]>\n\n", os.Args[0])
+  fmt.Fprintf(os.Stderr, "FLAGS\n\n")
+  flag.PrintDefaults()
+  fmt.Fprintf(os.Stderr, "\n")
+  fmt.Fprintf(os.Stderr, "COMMANDS\n\n")
+  fmt.Fprintf(os.Stderr, "    top      display overall health\n\n")
 }
 
 func getHealth() (data ClusterHealth) {
@@ -38,10 +54,10 @@ func getState() (data ClusterState) {
 }
 
 func get(path string, buf interface{}) (interface{}) {
-  resp, err := http.Get("http://127.0.0.1:19200" + path)
+  resp, err := http.Get("http://" + ip + ":" + port + path)
 
   if err != nil || resp.StatusCode > 200 {
-    fmt.Println("Could not find cluster at `127.0.0.1:19200`!")
+    fmt.Printf("Could not find cluster at `%s:%s`!\n", ip, port)
     os.Exit(1)
   }
 
