@@ -1,4 +1,4 @@
-package es
+package main
 
 import (
   "encoding/json"
@@ -8,6 +8,8 @@ import (
   "os"
   "net/http"
 )
+
+import "./types"
 
 var ip string
 var port string
@@ -92,7 +94,6 @@ func get(path string, buf interface{}) (interface{}) {
 
   return buf
 }
-
 
 type ClusterHealth struct {
   Status              string `json:"status"`
