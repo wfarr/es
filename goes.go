@@ -9,8 +9,6 @@ import (
   "net/http"
 )
 
-import "github.com/wfarr/es"
-
 var ip string
 var port string
 
@@ -20,11 +18,13 @@ func main() {
 
   flag.Parse()
 
-  es.Noop()
+  cluster := new(Cluster)
+  cluster.Ip = ip
+  cluster.Port = port
 
   switch flag.Arg(0) {
     case "status":
-      health, state, settings := getHealth(), getState(), getSettings()
+      health, _, settings := cluster.GetHealth(), cluster.GetState(), cluster.GetSettings()
       var allocation string
 
       if (settings.Persistent.AllocationDisabled || settings.Transient.AllocationDisabled) {
@@ -33,10 +33,13 @@ func main() {
         allocation = "enabled"
       }
 
-      fmt.Printf("Cluster `%s` is %s\nAllocation: %s\n",
-        state.ClusterName,
+      fmt.Printf("Cluster:\n  Name: %s\n  State: %s\n  Allocation: %s\n  Relocating Shards: %v\n  Initializing Shards: %v\n  Unassigned Shards: %v\n",
+        health.ClusterName,
         health.Status,
-        allocation)
+        allocation,
+        health.RelocatingShards,
+        health.InitializingShards,
+        health.UnassignedShards)
     default:
       usage()
       os.Exit(1)
@@ -58,17 +61,17 @@ func usage() {
   fmt.Fprintf(os.Stderr, "    status      display overall health\n\n")
 }
 
-func getHealth() (data ClusterHealth) {
+func (c *Cluster) GetHealth() (data ClusterHealth) {
   get("/_cluster/health", &data)
   return
 }
 
-func getState() (data ClusterState) {
+func (c *Cluster) GetState() (data ClusterState) {
   get("/_cluster/state", &data)
   return
 }
 
-func getSettings() (data ClusterSettings) {
+func (c *Cluster) GetSettings() (data ClusterSettings) {
   get("/_cluster/settings", &data)
   return
 }
@@ -95,6 +98,11 @@ func get(path string, buf interface{}) (interface{}) {
   }
 
   return buf
+}
+
+type Cluster struct {
+  Ip string
+  Port string
 }
 
 type ClusterHealth struct {
