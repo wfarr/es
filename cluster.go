@@ -41,25 +41,25 @@ type SettingsYo struct {
 }
 
 func (c *Cluster) GetHealth() (data ClusterHealth) {
-	get("/_cluster/health", &data)
+	c.get("/_cluster/health", &data)
 	return
 }
 
 func (c *Cluster) GetState() (data ClusterState) {
-	get("/_cluster/state", &data)
+	c.get("/_cluster/state", &data)
 	return
 }
 
 func (c *Cluster) GetSettings() (data ClusterSettings) {
-	get("/_cluster/settings", &data)
+	c.get("/_cluster/settings", &data)
 	return
 }
 
-func get(path string, buf interface{}) interface{} {
-	resp, err := http.Get("http://" + ip + ":" + port + path)
+func (c *Cluster) get(path string, buf interface{}) interface{} {
+	resp, err := http.Get("http://" + c.Ip + ":" + c.Port + path)
 
 	if err != nil || resp.StatusCode > 200 {
-		fmt.Printf("Could not find cluster at `%s:%s`!\n", ip, port)
+		fmt.Printf("Could not find cluster at `%s:%s`!\n", c.Ip, c.Port)
 		os.Exit(1)
 	}
 

@@ -4,57 +4,90 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
-var ip string
-var port string
+var cluster Cluster
 
-func main() {
-	flag.StringVar(&ip, "ip", "127.0.0.1", "The host elasticsearch is running on")
-	flag.StringVar(&port, "port", "9200", "The port elasticsearch is running on")
+type Command struct {
+	// args does not include the command name
+	Run  func(cluster *Cluster, cmd *Command, args []string)
+	Flag flag.FlagSet
 
-	flag.Parse()
-
-	cluster := &Cluster{
-		Ip:   ip,
-		Port: port,
-	}
-
-	switch flag.Arg(0) {
-	case "status":
-		health, _, settings := cluster.GetHealth(), cluster.GetState(), cluster.GetSettings()
-		var allocation string
-
-		if settings.Persistent.AllocationDisabled || settings.Transient.AllocationDisabled {
-			allocation = "disabled"
-		} else {
-			allocation = "enabled"
-		}
-
-		fmt.Printf("Cluster:\n  Name: %s\n  State: %s\n  Allocation: %s\n  Relocating Shards: %v\n  Initializing Shards: %v\n  Unassigned Shards: %v\n",
-			health.ClusterName,
-			health.Status,
-			allocation,
-			health.RelocatingShards,
-			health.InitializingShards,
-			health.UnassignedShards)
-	default:
-		usage()
-		os.Exit(1)
-	}
-
-	os.Exit(0)
+	Usage string // first word is the command name
+	Short string // `es help` output
+	Long  string // `es help cmd` output
 }
 
-func usage() {
-	if !flag.Parsed() {
-		flag.Parse()
+func (c *Command) printUsage() {
+	if c.Runnable() {
+		fmt.Printf("Usage: es %s\n\n", c.Usage)
+	}
+	fmt.Println(strings.Trim(c.Long, "\n"))
+}
+
+func (c *Command) Name() string {
+	name := c.Usage
+	i := strings.Index(name, " ")
+	if i >= 0 {
+		name = name[:i]
+	}
+	return name
+}
+
+func (c *Command) Runnable() bool {
+	return c.Run != nil
+}
+
+const extra = " (extra)"
+
+func (c *Command) List() bool {
+	return c.Short != "" && !strings.HasSuffix(c.Short, extra)
+}
+
+func (c *Command) ListAsExtra() bool {
+	return c.Short != "" && strings.HasSuffix(c.Short, extra)
+}
+
+func (c *Command) ShortExtra() string {
+	return c.Short[:len(c.Short)-len(extra)]
+}
+
+// Running `es help` will list commands in this order.
+var commands = []*Command{
+	cmdHelp,
+	cmdStatus,
+}
+
+var (
+	flagApp  string
+	flagLong bool
+)
+
+func main() {
+	cluster := &Cluster{
+		Ip:   "127.0.0.1",
+		Port: "9200",
 	}
 
-	fmt.Fprintf(os.Stderr, "Usage: %s [flags] [command] <[subcommand]>\n\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "FLAGS\n\n")
-	flag.PrintDefaults()
-	fmt.Fprintf(os.Stderr, "\n")
-	fmt.Fprintf(os.Stderr, "COMMANDS\n\n")
-	fmt.Fprintf(os.Stderr, "    status      display overall health\n\n")
+	args := os.Args[1:]
+
+	if len(args) < 1 {
+		usage()
+	}
+
+	for _, cmd := range commands {
+		if cmd.Name() == args[0] && cmd.Run != nil {
+			cmd.Flag.Usage = func() {
+				cmd.printUsage()
+			}
+
+			if err := cmd.Flag.Parse(args[1:]); err != nil {
+				os.Exit(2)
+			}
+
+			cmd.Run(cluster, cmd, cmd.Flag.Args())
+			return
+		}
+	}
 }
