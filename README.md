@@ -3,7 +3,7 @@
 ## Usage
 
 ```
-Usage: goes [flags] [command] <[subcommand]>
+Usage: es [flags] [command] <[subcommand]>
 
 FLAGS
 
