@@ -15,9 +15,10 @@ func main() {
 
   flag.Parse()
 
-  cluster := new(Cluster)
-  cluster.Ip = ip
-  cluster.Port = port
+  cluster := &Cluster{
+    Ip: ip,
+    Port: port,
+  }
 
   switch flag.Arg(0) {
     case "status":
