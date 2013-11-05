@@ -17,17 +17,24 @@ func MockServer(resp string) (ts *httptest.Server) {
 }
 
 func TestGetHealth(t *testing.T) {
-	ts := MockServer(`{"status": "tangerine"}`)
+	ts := MockServer(`{
+		"status": "tangerine",
+		"cluster_name": "foobar"
+	}`)
 	defer ts.Close()
 
 	cluster := &Cluster{
 		URL: ts.URL,
 	}
+	health := cluster.GetHealth()
 
-	status := cluster.GetHealth().Status
+	if health.Status != "tangerine" {
+		t.Log("Expected status to be `tangerine`, got", health.Status)
+		t.Fail()
+	}
 
-	if status != "tangerine" {
-		t.Log("Expected status to be `tangerine`, got", status)
+	if health.ClusterName != "foobar" {
+		t.Log("Expected cluster name to be `foobar`, got", health.ClusterName)
 		t.Fail()
 	}
 }
