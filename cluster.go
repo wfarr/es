@@ -9,8 +9,7 @@ import (
 )
 
 type Cluster struct {
-	Ip   string
-	Port string
+	URL  string
 }
 
 type ClusterHealth struct {
@@ -56,10 +55,10 @@ func (c *Cluster) GetSettings() (data ClusterSettings) {
 }
 
 func (c *Cluster) get(path string, buf interface{}) interface{} {
-	resp, err := http.Get("http://" + c.Ip + ":" + c.Port + path)
+	resp, err := http.Get(c.URL + "/" + path)
 
 	if err != nil || resp.StatusCode > 200 {
-		fmt.Printf("Could not find cluster at `%s:%s`!\n", c.Ip, c.Port)
+		fmt.Printf("Could not find cluster at `%s`!\n", c.URL)
 		os.Exit(1)
 	}
 

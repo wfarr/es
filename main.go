@@ -66,8 +66,7 @@ var (
 
 func main() {
 	cluster := &Cluster{
-		Ip:   "127.0.0.1",
-		Port: "9200",
+		URL: "http://127.0.0.1:9200",
 	}
 
 	args := os.Args[1:]
