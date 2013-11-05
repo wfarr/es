@@ -9,7 +9,7 @@ import (
 )
 
 type Cluster struct {
-	URL  string
+	URL string
 }
 
 type ClusterHealth struct {

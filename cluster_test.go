@@ -14,7 +14,6 @@ func SetupTestServer(handler func(w http.ResponseWriter, r *http.Request)) (ts *
 	return
 }
 
-
 func TestGetHealth(t *testing.T) {
 	ts := SetupTestServer(func(w http.ResponseWriter, r *http.Request) {
 		status := `{"status": "tangerine"}`
@@ -25,7 +24,7 @@ func TestGetHealth(t *testing.T) {
 	defer ts.Close()
 
 	cluster := &Cluster{
-		URL:   ts.URL,
+		URL: ts.URL,
 	}
 
 	status := cluster.GetHealth().Status
