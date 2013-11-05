@@ -9,18 +9,15 @@ import (
 
 import "testing"
 
-func SetupTestServer(handler func(w http.ResponseWriter, r *http.Request)) (ts *httptest.Server) {
-	ts = httptest.NewServer(http.HandlerFunc(handler))
+func MockServer(resp string) (ts *httptest.Server) {
+	ts = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, resp)
+	}))
 	return
 }
 
 func TestGetHealth(t *testing.T) {
-	ts := SetupTestServer(func(w http.ResponseWriter, r *http.Request) {
-		status := `{"status": "tangerine"}`
-
-		fmt.Fprintf(w, status)
-	})
-
+	ts := MockServer(`{"status": "tangerine"}`)
 	defer ts.Close()
 
 	cluster := &Cluster{
