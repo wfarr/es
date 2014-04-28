@@ -16,7 +16,7 @@ func testServer(resp string) (ts *httptest.Server) {
 	return
 }
 
-func TestCluster(t *testing.T) {
+func TestClusterHealth(t *testing.T) {
 	ts := testServer(`{
 		"status": "tangerine",
 		"cluster_name": "foobar",
@@ -32,7 +32,7 @@ func TestCluster(t *testing.T) {
 
 	defer ts.Close()
 
-	cluster := &Cluster{ URL: ts.URL }
+	cluster := &Cluster{URL: ts.URL}
 	health := cluster.GetHealth()
 
 	if health.Status != "tangerine" {
@@ -63,6 +63,47 @@ func TestCluster(t *testing.T) {
 		t.Fail()
 	}
 	if health.UnassignedShards != 0 {
+		t.Fail()
+	}
+}
+
+func TestClusterVersion(t *testing.T) {
+	ts := testServer(`{
+  "ok" : true,
+  "status" : 200,
+  "name" : "boxen",
+  "version" : {
+    "number" : "0.90.5",
+    "build_hash" : "c8714e8e0620b62638f660f6144831792b9dedee",
+    "build_timestamp" : "2013-09-17T12:50:20Z",
+    "build_snapshot" : false,
+    "lucene_version" : "4.4"
+  },
+  "tagline" : "You Know, for Search"
+	}`)
+
+	defer ts.Close()
+
+	cluster := &Cluster{URL: ts.URL}
+	v := cluster.GetVersion()
+
+	if v.Number != "0.90.5" {
+		t.Fail()
+	}
+
+	if v.BuildHash != "c8714e8e0620b62638f660f6144831792b9dedee" {
+		t.Fail()
+	}
+
+	if v.BuildTimestamp != "2013-09-17T12:50:20Z" {
+		t.Fail()
+	}
+
+	if v.BuildSnapshot != false {
+		t.Fail()
+	}
+
+	if v.LuceneVersion != "4.4" {
 		t.Fail()
 	}
 }
