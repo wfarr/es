@@ -5,19 +5,19 @@ import (
 	"net/http"
 
 	"net/http/httptest"
+
+	"testing"
 )
 
-import "testing"
-
-func MockServer(resp string) (ts *httptest.Server) {
+func testServer(resp string) (ts *httptest.Server) {
 	ts = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, resp)
 	}))
 	return
 }
 
-func TestGetHealth(t *testing.T) {
-	ts := MockServer(`{
+func TestCluster(t *testing.T) {
+	ts := testServer(`{
 		"status": "tangerine",
 		"cluster_name": "foobar",
 		"timed_out" : false,
@@ -29,11 +29,10 @@ func TestGetHealth(t *testing.T) {
 		"initializing_shards" : 0,
 		"unassigned_shards" : 0
 	}`)
+
 	defer ts.Close()
 
-	cluster := &Cluster{
-		URL: ts.URL,
-	}
+	cluster := &Cluster{ URL: ts.URL }
 	health := cluster.GetHealth()
 
 	if health.Status != "tangerine" {
