@@ -46,15 +46,6 @@ type ClusterState struct {
 	MasterNode  string `json:"master_node"`
 }
 
-type ClusterSettings struct {
-	Persistent SettingsYo `json:"persistent"`
-	Transient  SettingsYo `json:"transient"`
-}
-
-type SettingsYo struct {
-	AllocationDisabled bool `json:"allocation_disabled"`
-}
-
 func (c *Cluster) GetVersion() (ClusterVersion) {
 	ci := &ClusterInfo{}
 	c.get("/", &ci)
@@ -69,11 +60,6 @@ func (c *Cluster) GetHealth() (data ClusterHealth) {
 
 func (c *Cluster) GetState() (data ClusterState) {
 	c.get("/_cluster/state", &data)
-	return
-}
-
-func (c *Cluster) GetSettings() (data ClusterSettings) {
-	c.get("/_cluster/settings", &data)
 	return
 }
 
