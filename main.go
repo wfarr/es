@@ -56,7 +56,7 @@ func (c *Command) ShortExtra() string {
 // Running `es help` will list commands in this order.
 var commands = []*Command{
 	cmdHelp,
-	cmdStatus,
+	cmdHealth,
 }
 
 var (
