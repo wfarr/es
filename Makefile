@@ -8,7 +8,7 @@ build: clean
 	$(GO) build
 
 test: build
-	$(GO) test
+	$(GO) test -v
 
 fmt:
 	$(GO) fmt
