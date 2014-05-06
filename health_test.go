@@ -15,7 +15,7 @@ func ExampleHealthCommand() {
   }`)
 
   defer ts.Close()
-  cluster := &Cluster{URL: ts.URL}
+  cluster := &Cluster{&Client{URL: ts.URL}}
 
   cmdHealth.Run(cluster, nil, nil)
 

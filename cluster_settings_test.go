@@ -18,7 +18,7 @@ func TestClusterSettingsOhNinety(t *testing.T) {
 
   defer ts.Close()
 
-  cluster := &Cluster{URL: ts.URL}
+  cluster := &Cluster{&Client{URL: ts.URL}}
   settings := cluster.GetSettings()
 
   if (settings.Persistent.ClusterRoutingAllocationDisableAllocation != false) {
@@ -50,7 +50,7 @@ func TestClusterSettingsOneOh(t *testing.T) {
 
   defer ts.Close()
 
-  cluster := &Cluster{URL: ts.URL}
+  cluster := &Cluster{&Client{URL: ts.URL}}
   settings := cluster.GetSettings()
 
   if (settings.Persistent.ClusterRoutingAllocationEnable != "all") {
