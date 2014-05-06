@@ -7,8 +7,8 @@ type FullClusterSettings struct {
 
 type ClusterSettings struct {
 	// 0.90 allocation settings
-	ClusterRoutingAllocationDisableAllocation        bool `json:"cluster.routing.allocation.disable_allocation,omitempty"`
-	ClusterRoutingAllocationDisableReplicaAllocation bool `json:"cluster.routing.allocation.disable_replica_allocation,omitempty"`
+	ClusterRoutingAllocationDisableAllocation        bool `json:"cluster.routing.allocation.disable_allocation"`
+	ClusterRoutingAllocationDisableReplicaAllocation bool `json:"cluster.routing.allocation.disable_replica_allocation"`
 
 	// 1.0 allocation settings
 	ClusterRoutingAllocationEnable string `json:"cluster.routing.allocation.enable"`

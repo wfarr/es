@@ -57,6 +57,7 @@ func (c *Command) ShortExtra() string {
 var commands = []*Command{
 	cmdHelp,
 	cmdHealth,
+	cmdAllocation,
 }
 
 var (

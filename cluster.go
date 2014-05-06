@@ -1,5 +1,9 @@
 package main
 
+import (
+	"strings"
+)
+
 type Cluster struct {
 	Client *Client
 }
@@ -25,6 +29,10 @@ type ClusterState struct {
 	MasterNode  string `json:"master_node"`
 }
 
+func (c *Cluster) Version() string {
+	return c.GetVersion().Number
+}
+
 func (c *Cluster) GetVersion() ClusterVersion {
 	ci := &ClusterInfo{}
 	c.Client.Get(&ci, "/")
@@ -35,4 +43,18 @@ func (c *Cluster) GetVersion() ClusterVersion {
 func (c *Cluster) GetState() (data ClusterState) {
 	c.Client.Get(&data, "/_cluster/state")
 	return
+}
+
+func (c *Cluster) OhNinety() bool {
+	ver := cluster.GetVersion().Number
+	segments := strings.Split(ver, ".")
+
+	return segments[0] == "0" && segments[1] == "90"
+}
+
+func (c *Cluster) One() bool {
+	ver := cluster.GetVersion().Number
+	segments := strings.Split(ver, ".")
+
+	return segments[0] == "1"
 }
