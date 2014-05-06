@@ -25,7 +25,7 @@ type ClusterState struct {
 	MasterNode  string `json:"master_node"`
 }
 
-func (c *Cluster) GetVersion() (ClusterVersion) {
+func (c *Cluster) GetVersion() ClusterVersion {
 	ci := &ClusterInfo{}
 	c.Client.Get(&ci, "/")
 

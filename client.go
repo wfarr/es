@@ -9,7 +9,7 @@
 package main
 
 import (
-  "bytes"
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
@@ -22,29 +22,29 @@ import (
 )
 
 type Client struct {
-  HTTP *http.Client
-  URL string
-  Debug bool
+	HTTP  *http.Client
+	URL   string
+	Debug bool
 }
 
 func (c *Client) Get(v interface{}, path string) error {
-  return c.APIReq(v, "GET", path, nil)
+	return c.APIReq(v, "GET", path, nil)
 }
 
 func (c *Client) Patch(v interface{}, path string, body interface{}) error {
-  return c.APIReq(v, "PATCH", path, body)
+	return c.APIReq(v, "PATCH", path, body)
 }
 
 func (c *Client) Post(v interface{}, path string, body interface{}) error {
-  return c.APIReq(v, "POST", path, body)
+	return c.APIReq(v, "POST", path, body)
 }
 
 func (c *Client) Put(v interface{}, path string, body interface{}) error {
-  return c.APIReq(v, "PUT", path, body)
+	return c.APIReq(v, "PUT", path, body)
 }
 
 func (c *Client) Delete(path string) error {
-  return c.APIReq(nil, "DELETE", path, nil)
+	return c.APIReq(nil, "DELETE", path, nil)
 }
 
 // Generates an HTTP request for Elasticsearch, but does not
@@ -59,9 +59,9 @@ func (c *Client) Delete(path string) error {
 //   io.Reader   body is sent verbatim
 //   else        body is encoded as application/json
 func (c *Client) NewRequest(method, path string, body interface{}) (*http.Request, error) {
-  var rbody io.Reader
+	var rbody io.Reader
 
-  switch t := body.(type) {
+	switch t := body.(type) {
 	case nil:
 	case string:
 		rbody = bytes.NewBufferString(t)
@@ -86,20 +86,20 @@ func (c *Client) NewRequest(method, path string, body interface{}) (*http.Reques
 		rbody = bytes.NewReader(j)
 	}
 
-  apiURL := strings.TrimRight(c.URL, "/")
-  if apiURL == "" {
-    apiURL = "http://127.0.0.1:9200"
-  }
+	apiURL := strings.TrimRight(c.URL, "/")
+	if apiURL == "" {
+		apiURL = "http://127.0.0.1:9200"
+	}
 
-  req, err := http.NewRequest(method, apiURL+path, rbody)
-  if err != nil {
-    return nil, err
-  }
+	req, err := http.NewRequest(method, apiURL+path, rbody)
+	if err != nil {
+		return nil, err
+	}
 
-  req.Header.Set("Accept", "application/json")
-  req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
-  return req, nil
+	return req, nil
 }
 
 // Sends a Heroku API request and decodes the response into v. As
@@ -107,11 +107,11 @@ func (c *Client) NewRequest(method, path string, body interface{}) (*http.Reques
 // encode the request body. As described in DoReq(), the type of
 // v determines how to handle the response body.
 func (c *Client) APIReq(v interface{}, meth, path string, body interface{}) error {
-  req, err := c.NewRequest(meth, path, body)
-  if err != nil {
-    return err
-  }
-  return c.DoReq(req, v)
+	req, err := c.NewRequest(meth, path, body)
+	if err != nil {
+		return err
+	}
+	return c.DoReq(req, v)
 }
 
 // Submits an HTTP request, checks its response, and deserializes
@@ -123,69 +123,69 @@ func (c *Client) APIReq(v interface{}, meth, path string, body interface{}) erro
 //   else       body is decoded into v as json
 //
 func (c *Client) DoReq(req *http.Request, v interface{}) error {
-  if c.Debug {
-    dump, err := httputil.DumpRequestOut(req, true)
-    if err != nil {
-      log.Println(err)
-    } else {
-      os.Stderr.Write(dump)
-      os.Stderr.Write([]byte{'\n', '\n'})
-    }
-  }
+	if c.Debug {
+		dump, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			log.Println(err)
+		} else {
+			os.Stderr.Write(dump)
+			os.Stderr.Write([]byte{'\n', '\n'})
+		}
+	}
 
-  httpClient := c.HTTP
-  if httpClient == nil {
-    httpClient = http.DefaultClient
-  }
+	httpClient := c.HTTP
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
 
-  res, err := httpClient.Do(req)
-  if err != nil {
-    return err
-  }
-  defer res.Body.Close()
-  if c.Debug {
-    dump, err := httputil.DumpResponse(res, true)
-    if err != nil {
-      log.Println(err)
-    } else {
-      os.Stderr.Write(dump)
-      os.Stderr.Write([]byte{'\n'})
-    }
-  }
-  if err = checkResp(res); err != nil {
-    return err
-  }
-  switch t := v.(type) {
-  case nil:
-  case io.Writer:
-    _, err = io.Copy(t, res.Body)
-  default:
-    err = json.NewDecoder(res.Body).Decode(v)
-  }
-  return err
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	if c.Debug {
+		dump, err := httputil.DumpResponse(res, true)
+		if err != nil {
+			log.Println(err)
+		} else {
+			os.Stderr.Write(dump)
+			os.Stderr.Write([]byte{'\n'})
+		}
+	}
+	if err = checkResp(res); err != nil {
+		return err
+	}
+	switch t := v.(type) {
+	case nil:
+	case io.Writer:
+		_, err = io.Copy(t, res.Body)
+	default:
+		err = json.NewDecoder(res.Body).Decode(v)
+	}
+	return err
 }
 
 // An Error represents a Heroku API error.
 type Error struct {
-  error
-  Id  string
-  URL string
+	error
+	Id  string
+	URL string
 }
 
 type errorResp struct {
-  Message string
-  Id      string
-  URL     string `json:"url"`
+	Message string
+	Id      string
+	URL     string `json:"url"`
 }
 
 func checkResp(res *http.Response) error {
-  if res.StatusCode > 299 {
-    var e errorResp
-    err := json.NewDecoder(res.Body).Decode(&e)
-    if err != nil {
-      return errors.New("Unexpected error: " + res.Status)
-    }
-    return Error{error: errors.New(e.Message), Id: e.Id, URL: e.URL}
-  }
-  return nil
+	if res.StatusCode > 299 {
+		var e errorResp
+		err := json.NewDecoder(res.Body).Decode(&e)
+		if err != nil {
+			return errors.New("Unexpected error: " + res.Status)
+		}
+		return Error{error: errors.New(e.Message), Id: e.Id, URL: e.URL}
+	}
+	return nil
 }

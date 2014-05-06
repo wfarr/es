@@ -7,7 +7,7 @@ default: test
 build: clean
 	$(GO) build
 
-test: build
+test: build fmt
 	$(GO) test -v
 
 fmt:
