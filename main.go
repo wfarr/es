@@ -65,9 +65,7 @@ var (
 )
 
 func main() {
-	cluster := &Cluster{
-		URL: "http://127.0.0.1:9200",
-	}
+	cluster := &Cluster{&Client{URL: "http://127.0.0.1:9200"}}
 
 	args := os.Args[1:]
 

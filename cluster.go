@@ -1,15 +1,7 @@
 package main
 
-import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"os"
-)
-
 type Cluster struct {
-	URL string
+	Client *Client
 }
 
 type ClusterVersion struct {
@@ -48,41 +40,17 @@ type ClusterState struct {
 
 func (c *Cluster) GetVersion() (ClusterVersion) {
 	ci := &ClusterInfo{}
-	c.get("/", &ci)
+	c.Client.Get(&ci, "/")
 
 	return ci.Version
 }
 
 func (c *Cluster) GetHealth() (data ClusterHealth) {
-	c.get("/_cluster/health", &data)
+	c.Client.Get(&data, "/_cluster/health")
 	return
 }
 
 func (c *Cluster) GetState() (data ClusterState) {
-	c.get("/_cluster/state", &data)
+	c.Client.Get(&data, "/_cluster/state")
 	return
-}
-
-func (c *Cluster) get(path string, buf interface{}) interface{} {
-	resp, err := http.Get(c.URL + "/" + path)
-
-	if err != nil || resp.StatusCode > 200 {
-		fmt.Printf("Could not find cluster at `%s`!\n", c.URL)
-		os.Exit(1)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	err = json.Unmarshal(body, &buf)
-
-	if err != nil {
-		fmt.Println("That's not JSON buddy!")
-		os.Exit(1)
-	}
-
-	return buf
 }
