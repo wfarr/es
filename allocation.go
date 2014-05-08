@@ -29,7 +29,7 @@ var cmdAllocation = &Command{
 `,
 }
 
-func runAllocation(cluster *Cluster, cmd *Command, args []string) {
+func runAllocation(c *Cluster, cmd *Command, args []string) {
 	var settingName string
 	var settingValue interface{}
 	var foundValidValue bool
@@ -40,7 +40,7 @@ func runAllocation(cluster *Cluster, cmd *Command, args []string) {
 	}
 
 	if len(args) == 0 {
-		settings := cluster.GetSettings()
+		settings := c.Stretch.GetSettings()
 
 		t := termtable.NewTable(&termtable.TableOptions{Padding: 1, Header: []string{"SETTING TYPE", "SETTING NAME", "VALUE"}})
 
@@ -61,7 +61,7 @@ func runAllocation(cluster *Cluster, cmd *Command, args []string) {
 		os.Exit(0)
 	}
 
-	if cluster.One() {
+	if c.One() {
 		settingName = "cluster.routing.allocation.enable"
 		validValues := [...]string{"all", "primaries", "new_primaries", "none"}
 
@@ -73,12 +73,12 @@ func runAllocation(cluster *Cluster, cmd *Command, args []string) {
 		}
 
 		if !foundValidValue {
-			fmt.Printf("Received an invalid setting for cluster version %v: %v\n\n", cluster.Version(), args[0])
+			fmt.Printf("Received an invalid setting for cluster version %v: %v\n\n", c.VersionNumber(), args[0])
 			cmd.printUsage()
 			os.Exit(1)
 		}
 
-	} else if cluster.OhNinety() {
+	} else if c.OhNinety() {
 		settingName = "cluster.routing.allocation.disable_allocation"
 		validValues := [...]string{"enable", "disable"}
 
@@ -95,7 +95,7 @@ func runAllocation(cluster *Cluster, cmd *Command, args []string) {
 		}
 
 		if !foundValidValue {
-			fmt.Printf("Received an invalid setting for cluster version %v: %v\n\n", cluster.Version(), args[0])
+			fmt.Printf("Received an invalid setting for cluster version %v: %v\n\n", c.VersionNumber(), args[0])
 			cmd.printUsage()
 			os.Exit(1)
 		}
@@ -107,7 +107,7 @@ func runAllocation(cluster *Cluster, cmd *Command, args []string) {
 	newSettings := make(map[string]map[string]interface{})
 	newSettings["persistent"] = make(map[string]interface{})
 	newSettings["persistent"][settingName] = settingValue
-	err := cluster.SetSettings(newSettings)
+	err := c.Stretch.SetSettings(newSettings)
 
 	if err != nil {
 		fmt.Println(err)

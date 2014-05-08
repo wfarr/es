@@ -16,8 +16,8 @@ var cmdHealth = &Command{
 `,
 }
 
-func runHealth(cluster *Cluster, cmd *Command, args []string) {
-	health := cluster.GetHealth()
+func runHealth(c *Cluster, cmd *Command, args []string) {
+	health := c.Stretch.GetHealth()
 
 	t := termtable.NewTable(&termtable.TableOptions{Padding: 1, Header: []string{"CLUSTER HEALTH", ""}})
 

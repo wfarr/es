@@ -5,7 +5,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/wfarr/stretch-go"
 )
+
+type Cluster struct {
+	Stretch *stretch.Cluster
+}
 
 var cluster Cluster
 
@@ -66,7 +72,7 @@ var (
 )
 
 func main() {
-	cluster := &Cluster{&Client{URL: "http://127.0.0.1:9200"}}
+	cluster := &Cluster{&stretch.Cluster{&stretch.Client{URL: "http://127.0.0.1:9200"}}}
 
 	args := os.Args[1:]
 

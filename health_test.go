@@ -1,6 +1,6 @@
 package main
 
-func ExampleHealthCommand() {
+func ExampleRunHealth() {
 	ts := testServer(`{
 		"status": "tangerine",
 		"cluster_name": "foobar",
@@ -15,7 +15,7 @@ func ExampleHealthCommand() {
 		}`)
 
 	defer ts.Close()
-	cluster := &Cluster{&Client{URL: ts.URL}}
+	cluster := makeClusterForTestServer(ts)
 
 	cmdHealth.Run(cluster, nil, nil)
 

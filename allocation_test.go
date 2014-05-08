@@ -1,6 +1,6 @@
 package main
 
-func ExampleCmdAllocation_one_oh() {
+func ExampleCommand_Run_runAllocation_one_oh() {
 	ts := testServer(`{
 		"persistent": {
 			"cluster.routing.allocation.enable": "all"
@@ -11,10 +11,9 @@ func ExampleCmdAllocation_one_oh() {
 	}`)
 
 	defer ts.Close()
-	cluster := &Cluster{&Client{URL: ts.URL}}
+	cluster := makeClusterForTestServer(ts)
 
 	cmdAllocation.Run(cluster, nil, nil)
-
 	// Output:
 	// +--------------+-----------------------------------+---------------+
 	// | SETTING TYPE | SETTING NAME                      | VALUE         |
@@ -24,8 +23,7 @@ func ExampleCmdAllocation_one_oh() {
 	// +--------------+-----------------------------------+---------------+
 }
 
-
-func ExampleCmdAllocation_oh_ninety() {
+func ExampleCommand_Run_runAllocation_oh_ninety() {
 	ts := testServer(`{
 		"persistent": {
 			"cluster.routing.allocation.disable_allocation": false
@@ -36,10 +34,9 @@ func ExampleCmdAllocation_oh_ninety() {
 	}`)
 
 	defer ts.Close()
-	cluster := &Cluster{&Client{URL: ts.URL}}
+	cluster := makeClusterForTestServer(ts)
 
 	cmdAllocation.Run(cluster, nil, nil)
-
 	// Output:
 	// +--------------+-----------------------------------------------+-------+
 	// | SETTING TYPE | SETTING NAME                                  | VALUE |
