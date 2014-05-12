@@ -64,6 +64,7 @@ var commands = []*Command{
 	cmdHelp,
 	cmdHealth,
 	cmdAllocation,
+	cmdNodes,
 }
 
 var (
