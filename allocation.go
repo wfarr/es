@@ -20,10 +20,10 @@ var cmdAllocation = &Command{
 		* disable
 
 	For Elasticsearch clusters running 1.x, valid options are:
-		* all
+		* all (alias: enable)
 		* primaries
 		* new_primaries
-		* none
+		* none (alias: disable)
 
 	If no settings is given, display the current cluster allocation settings.
 `,
