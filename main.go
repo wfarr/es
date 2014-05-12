@@ -65,6 +65,7 @@ var commands = []*Command{
 	cmdHealth,
 	cmdAllocation,
 	cmdNodes,
+	cmdHotThreads,
 }
 
 var (
