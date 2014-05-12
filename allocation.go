@@ -70,12 +70,12 @@ func runAllocation(c *Cluster, cmd *Command, args []string) {
 				foundValidValue = true
 
 				switch v {
-					case "enable":
-						settingValue = "all"
-					case "disable":
-						settingValue = "none"
-					default:
-						settingValue = v
+				case "enable":
+					settingValue = "all"
+				case "disable":
+					settingValue = "none"
+				default:
+					settingValue = v
 				}
 
 			}
