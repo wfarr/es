@@ -63,12 +63,21 @@ func runAllocation(c *Cluster, cmd *Command, args []string) {
 
 	if c.One() {
 		settingName = "cluster.routing.allocation.enable"
-		validValues := [...]string{"all", "primaries", "new_primaries", "none"}
+		validValues := [...]string{"all", "primaries", "new_primaries", "none", "enable", "disable"}
 
 		for _, v := range validValues {
 			if args[0] == v {
 				foundValidValue = true
-				settingValue = v
+
+				switch v {
+					case "enable":
+						settingValue = "all"
+					case "disable":
+						settingValue = "none"
+					default:
+						settingValue = v
+				}
+
 			}
 		}
 
