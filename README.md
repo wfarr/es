@@ -3,15 +3,38 @@
 ## Usage
 
 ```
-Usage: es [flags] [command] <[subcommand]>
+$ ./es help
+Usage: es [command] [options] [arguments]
 
-FLAGS
 
-  -ip="127.0.0.1": The host elasticsearch is running on
-  -port="9200": The port elasticsearch is running on
+Commands:
 
-COMMANDS
+		health    display the health of the cluster
+		allocation  control cluster allocation settings
 
-    status      display overall health
+Run 'es help [command]' for details.
 
-```
+
+$ ./es help health
+Usage: es health
+
+	Displays general cluster health information.
+
+
+$ ./es help allocation
+Usage: es allocation [<setting>]
+
+	Manage cluster allocation settings.
+
+	For Elasticsearch clusters running 0.90.x, valid options are:
+		* enable
+		* disable
+
+	For Elasticsearch clusters running 1.x, valid options are:
+		* all
+		* primaries
+		* new_primaries
+		* none
+
+	If no settings is given, display the current cluster allocation settings.
+  ```
