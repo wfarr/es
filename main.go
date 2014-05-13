@@ -86,6 +86,7 @@ func main() {
 
 	if len(args) < 1 {
 		printUsage()
+		os.Exit(2)
 	}
 
 	for _, cmd := range commands {
