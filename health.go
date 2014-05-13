@@ -4,22 +4,71 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/wfarr/stretch-go"
 	"github.com/wfarr/termtable"
 )
 
 var cmdHealth = &Command{
 	Run:   runHealth,
-	Usage: "health",
+	Usage: "health [index]",
 	Short: "display the health of the cluster",
 	Long: `
-  Displays general cluster health information.
+	Displays general cluster health information.
+
+	If the argument 'index' is given, displays health by-index.
 `,
 }
 
 func runHealth(c *Cluster, cmd *Command, args []string) error {
 	health := c.Stretch.GetHealth()
 
-	t := termtable.NewTable(&termtable.TableOptions{Padding: 1, Header: []string{"CLUSTER HEALTH", ""}})
+	if len(args) > 0 && args[0] == "index" {
+		return renderIndexHealth(health)
+	}
+
+	return renderClusterHealth(health)
+}
+
+func renderIndexHealth(health stretch.ClusterHealth) error {
+	t := termtable.NewTable(&termtable.TableOptions{
+		Padding: 1,
+		Header: []string{
+			"INDEX",
+			"STATUS",
+			"SHARDS",
+			"REPLICAS",
+			"ACT. PRIM. SHARDS",
+			"ACTIVE SHARDS",
+			"RELOCATING",
+			"INITIALIZING",
+			"UNASSIGNED",
+		},
+	})
+
+	for indexName, indexHealth := range health.Indices {
+		t.AddRow([]string{
+			indexName,
+			indexHealth.Status,
+			strconv.Itoa(indexHealth.NumberOfShards),
+			strconv.Itoa(indexHealth.NumberOfReplicas),
+			strconv.Itoa(indexHealth.ActivePrimaryShards),
+			strconv.Itoa(indexHealth.ActiveShards),
+			strconv.Itoa(indexHealth.RelocatingShards),
+			strconv.Itoa(indexHealth.InitializingShards),
+			strconv.Itoa(indexHealth.UnassignedShards),
+		})
+	}
+
+	fmt.Println(t.Render())
+
+	return nil
+}
+
+func renderClusterHealth(health stretch.ClusterHealth) error {
+	t := termtable.NewTable(&termtable.TableOptions{
+		Padding: 1,
+		Header:  []string{"CLUSTER HEALTH", ""},
+	})
 
 	t.AddRow([]string{"Name", health.ClusterName})
 	t.AddRow([]string{"Status", health.Status})
