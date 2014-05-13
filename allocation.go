@@ -41,18 +41,32 @@ func runAllocation(c *Cluster, cmd *Command, args []string) error {
 	if len(args) == 0 {
 		settings := c.Stretch.GetSettings()
 
-		t := termtable.NewTable(&termtable.TableOptions{Padding: 1, Header: []string{"SETTING TYPE", "SETTING NAME", "VALUE"}})
+		t := termtable.NewTable(&termtable.TableOptions{Padding: 1, MaxColWidth: 90, Header: []string{"SETTING TYPE", "SETTING NAME", "VALUE"}})
 
-		t.AddRow([]string{"persistent", "cluster.routing.allocation.disable_allocation", strconv.FormatBool(settings.Persistent.ClusterRoutingAllocationDisableAllocation)})
+		// Persistent settings
+		if settings.Persistent.ClusterRoutingAllocationDisableAllocation {
+			t.AddRow([]string{"persistent", "cluster.routing.allocation.disable_allocation", strconv.FormatBool(settings.Transient.ClusterRoutingAllocationDisableAllocation)})
+		}
+
+		if settings.Persistent.ClusterRoutingAllocationDisableReplicaAllocation {
+			t.AddRow([]string{"persistent", "cluster.routing.allocation.disable_replica_allocation", strconv.FormatBool(settings.Transient.ClusterRoutingAllocationDisableReplicaAllocation)})
+		}
 
 		if settings.Persistent.ClusterRoutingAllocationEnable != "" {
 			t.AddRow([]string{"persistent", "cluster.routing.allocation.enable", settings.Persistent.ClusterRoutingAllocationEnable})
 		}
 
-		t.AddRow([]string{"transient", "cluster.routing.allocation.disable_allocation", strconv.FormatBool(settings.Transient.ClusterRoutingAllocationDisableAllocation)})
+		// Transient settings
+		if settings.Transient.ClusterRoutingAllocationDisableAllocation {
+			t.AddRow([]string{"transient", "cluster.routing.allocation.disable_allocation", strconv.FormatBool(settings.Transient.ClusterRoutingAllocationDisableAllocation)})
+		}
 
-		if settings.Persistent.ClusterRoutingAllocationEnable != "" {
-			t.AddRow([]string{"persistent", "cluster.routing.allocation.enable", settings.Transient.ClusterRoutingAllocationEnable})
+		if settings.Transient.ClusterRoutingAllocationDisableReplicaAllocation {
+			t.AddRow([]string{"transient", "cluster.routing.allocation.disable_replica_allocation", strconv.FormatBool(settings.Transient.ClusterRoutingAllocationDisableReplicaAllocation)})
+		}
+
+		if settings.Transient.ClusterRoutingAllocationEnable != "" {
+			t.AddRow([]string{"transient", "cluster.routing.allocation.enable", settings.Transient.ClusterRoutingAllocationEnable})
 		}
 
 		fmt.Println(t.Render())
