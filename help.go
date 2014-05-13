@@ -24,18 +24,6 @@ ELASTICSEARCH_PORT
 `,
 }
 
-var cmdVersion = &Command{
-	Run:   runVersion,
-	Usage: "version",
-	Short: "show es version",
-	Long:  `Version shows the es client version string.`,
-}
-
-func runVersion(cluster *Cluster, cmd *Command, args []string) error {
-	fmt.Println("0.1.1")
-	return nil
-}
-
 var cmdHelp = &Command{
 	Usage: "help [topic]",
 	Long:  `Help shows usage for a command or other topic.`,
@@ -55,7 +43,7 @@ func runHelp(cluster *Cluster, cmd *Command, args []string) error {
 	}
 
 	for _, cmd := range commands {
-		if cmd.name() == args[0] {
+		if cmd.Name() == args[0] {
 			cmd.printUsage()
 			return nil
 		}
@@ -70,7 +58,7 @@ Usage: es [command] [options] [arguments]
 
 Commands:
 {{range .Commands}}{{if .Runnable}}{{if .List}}
-    {{.Name | printf "%-8s"}}  {{.Short}}{{end}}{{end}}{{end}}
+    {{.Name | printf "%-16s"}}  {{.Short}}{{end}}{{end}}{{end}}
 
 Run 'es help [command]' for details.
 

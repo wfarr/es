@@ -28,7 +28,7 @@ type Command struct {
 }
 
 func (c *Command) renderUsage() (output string) {
-	if c.runnable() {
+	if c.Runnable() {
 		output += fmt.Sprintf("Usage: es %s\n\n", c.Usage)
 	}
 	output += fmt.Sprintf(strings.Trim(c.Long, "\n"))
@@ -40,7 +40,8 @@ func (c *Command) printUsage() {
 	fmt.Println(c.renderUsage())
 }
 
-func (c *Command) name() string {
+// Name returns the name of the command as a string
+func (c *Command) Name() string {
 	name := c.Usage
 	i := strings.Index(name, " ")
 	if i >= 0 {
@@ -49,27 +50,32 @@ func (c *Command) name() string {
 	return name
 }
 
-func (c *Command) runnable() bool {
+// Runnable returns true if there is a func assigned to c.Run
+func (c *Command) Runnable() bool {
 	return c.Run != nil
 }
 
 const extra = " (extra)"
 
-func (c *Command) list() bool {
+// List returns true if the command should be listed (ie. is not an extra command)
+func (c *Command) List() bool {
 	return c.Short != "" && !strings.HasSuffix(c.Short, extra)
 }
 
-func (c *Command) listAsExtra() bool {
+// ListAsExtra returns true if the command should be listed as an extra instead.
+func (c *Command) ListAsExtra() bool {
 	return c.Short != "" && strings.HasSuffix(c.Short, extra)
 }
 
-func (c *Command) shortExtra() string {
+// ShortExtra returns the short usage of the extra section, without the extra text
+func (c *Command) ShortExtra() string {
 	return c.Short[:len(c.Short)-len(extra)]
 }
 
 // Running `es help` will list commands in this order.
 var commands = []*Command{
 	cmdHelp,
+	cmdVersion,
 	cmdHealth,
 	cmdAllocation,
 	cmdNodes,
@@ -92,7 +98,7 @@ func main() {
 	}
 
 	for _, cmd := range commands {
-		if cmd.name() == args[0] && cmd.Run != nil {
+		if cmd.Name() == args[0] && cmd.Run != nil {
 			cmd.Flag.Usage = func() {
 				cmd.printUsage()
 			}
@@ -111,4 +117,7 @@ func main() {
 			return
 		}
 	}
+
+	printUsage()
+	os.Exit(2)
 }
