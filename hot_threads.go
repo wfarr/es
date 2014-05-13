@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -19,7 +18,7 @@ func runHotThreads(c *Cluster, cmd *Command, args []string) error {
 	hotThreads := c.Stretch.GetHotThreads(args...)
 
 	if strings.Trim(hotThreads, "\n") == "" {
-		return errors.New(fmt.Sprintf("Couldn't find any nodes for %v", args))
+		return fmt.Errorf("couldn't find any nodes for %v", args)
 	}
 
 	fmt.Println(hotThreads)
