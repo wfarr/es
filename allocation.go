@@ -3,13 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
-
-	"github.com/wfarr/termtable"
 )
 
 var cmdAllocation = &Command{
 	Run:   runAllocation,
-	Usage: "allocation [<setting>]",
+	Usage: "allocation <setting>",
 	Short: "control cluster allocation settings",
 	Long: `
 	Manage cluster allocation settings.
@@ -23,8 +21,6 @@ var cmdAllocation = &Command{
 		* primaries
 		* new_primaries
 		* none (alias: disable)
-
-	If no settings is given, display the current cluster allocation settings.
 `,
 }
 
@@ -33,32 +29,8 @@ func runAllocation(c *Cluster, cmd *Command, args []string) error {
 	var settingValue interface{}
 	var foundValidValue bool
 
-	if len(args) > 1 {
+	if len(args) != 1 {
 		return errors.New(cmd.renderUsage())
-	}
-
-	if len(args) == 0 {
-		settings := c.Stretch.GetSettings()
-
-		t := termtable.NewTable(&termtable.TableOptions{Padding: 1, MaxColWidth: 90, Header: []string{"SETTING NAME", "VALUE"}})
-
-		t.AddRow([]string{"PERSISTENT SETTINGS", ""})
-
-		for key, value := range settings.Persistent {
-			t.AddRow([]string{key, value})
-		}
-
-		t.AddRow([]string{"", ""})
-
-		t.AddRow([]string{"TRANSIENT SETTINGS", ""})
-
-		for key, value := range settings.Transient {
-			t.AddRow([]string{key, value})
-		}
-
-		fmt.Println(t.Render())
-
-		return nil
 	}
 
 	if c.one() {

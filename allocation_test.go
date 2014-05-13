@@ -1,59 +1,121 @@
 package main
 
-func ExampleCommand_Run_runAllocation_one_oh() {
+func ExampleCommandAllocation_enable_one_oh() {
 	ts := testServer(`{
-		"persistent": {
-			"cluster.routing.allocation.enable": "all"
-		},
-		"transient": {
-			"cluster.routing.allocation.enable": "new_primaries"
+		"version": {
+			"number": "1.1.1"
 		}
 	}`)
 
 	defer ts.Close()
 	cluster := makeClusterForTestServer(ts)
 
-	cmdAllocation.Run(cluster, nil, nil)
+	cmdAllocation.Run(cluster, nil, []string{"enable"})
 	// Output:
-	// +-----------------------------------+---------------+
-	// | SETTING NAME                      | VALUE         |
-	// +-----------------------------------+---------------+
-	// | PERSISTENT SETTINGS               |               |
-	// | cluster.routing.allocation.enable | all           |
-	// |                                   |               |
-	// | TRANSIENT SETTINGS                |               |
-	// | cluster.routing.allocation.enable | new_primaries |
-	// +-----------------------------------+---------------+
+	// Successfully set cluster.routing.allocation.enable=all
 }
 
-func ExampleCommand_Run_runAllocation_oh_ninety() {
+func ExampleCommandAllocation_disable_one_oh() {
 	ts := testServer(`{
-		"persistent": {
-			"cluster.routing.allocation.disable_allocation": "true"
-		},
-		"transient": {
-			"cluster.routing.allocation.disable_replica_allocation": "true",
-			"indices.recovery.max_bytes_per_sec" : "2gb",
-			"indices.recovery.concurrent_streams" : "24",
-			"cluster.routing.allocation.node_concurrent_recoveries" : "6"
+		"version": {
+			"number": "1.1.1"
 		}
 	}`)
 
 	defer ts.Close()
 	cluster := makeClusterForTestServer(ts)
 
-	cmdAllocation.Run(cluster, nil, nil)
+	cmdAllocation.Run(cluster, nil, []string{"disable"})
 	// Output:
-	// +-------------------------------------------------------+-------+
-	// | SETTING NAME                                          | VALUE |
-	// +-------------------------------------------------------+-------+
-	// | PERSISTENT SETTINGS                                   |       |
-	// | cluster.routing.allocation.disable_allocation         | true  |
-	// |                                                       |       |
-	// | TRANSIENT SETTINGS                                    |       |
-	// | cluster.routing.allocation.disable_replica_allocation | true  |
-	// | indices.recovery.max_bytes_per_sec                    | 2gb   |
-	// | indices.recovery.concurrent_streams                   | 24    |
-	// | cluster.routing.allocation.node_concurrent_recoveries | 6     |
-	// +-------------------------------------------------------+-------+
+	// Successfully set cluster.routing.allocation.enable=none
+}
+
+func ExampleCommandAllocation_all_one_oh() {
+	ts := testServer(`{
+		"version": {
+			"number": "1.1.1"
+		}
+	}`)
+
+	defer ts.Close()
+	cluster := makeClusterForTestServer(ts)
+
+	cmdAllocation.Run(cluster, nil, []string{"all"})
+	// Output:
+	// Successfully set cluster.routing.allocation.enable=all
+}
+
+func ExampleCommandAllocation_primaries_one_oh() {
+	ts := testServer(`{
+		"version": {
+			"number": "1.1.1"
+		}
+	}`)
+
+	defer ts.Close()
+	cluster := makeClusterForTestServer(ts)
+
+	cmdAllocation.Run(cluster, nil, []string{"primaries"})
+	// Output:
+	// Successfully set cluster.routing.allocation.enable=primaries
+}
+
+func ExampleCommandAllocation_new_primaries_one_oh() {
+	ts := testServer(`{
+		"version": {
+			"number": "1.1.1"
+		}
+	}`)
+
+	defer ts.Close()
+	cluster := makeClusterForTestServer(ts)
+
+	cmdAllocation.Run(cluster, nil, []string{"new_primaries"})
+	// Output:
+	// Successfully set cluster.routing.allocation.enable=new_primaries
+}
+
+func ExampleCommandAllocation_none_one_oh() {
+	ts := testServer(`{
+		"version": {
+			"number": "1.1.1"
+		}
+	}`)
+
+	defer ts.Close()
+	cluster := makeClusterForTestServer(ts)
+
+	cmdAllocation.Run(cluster, nil, []string{"none"})
+	// Output:
+	// Successfully set cluster.routing.allocation.enable=none
+}
+
+func ExampleCommandAllocation_enable_oh_ninety() {
+	ts := testServer(`{
+		"version": {
+			"number": "0.90.5"
+		}
+	}`)
+
+	defer ts.Close()
+	cluster := makeClusterForTestServer(ts)
+
+	cmdAllocation.Run(cluster, nil, []string{"enable"})
+	// Output:
+	// Successfully set cluster.routing.allocation.disable_allocation=false
+}
+
+func ExampleCommandAllocation_disable_oh_ninety() {
+	ts := testServer(`{
+		"version": {
+			"number": "0.90.5"
+		}
+	}`)
+
+	defer ts.Close()
+	cluster := makeClusterForTestServer(ts)
+
+	cmdAllocation.Run(cluster, nil, []string{"disable"})
+	// Output:
+	// Successfully set cluster.routing.allocation.disable_allocation=true
 }

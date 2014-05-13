@@ -77,6 +77,7 @@ var commands = []*Command{
 	cmdHelp,
 	cmdVersion,
 	cmdHealth,
+	cmdSettings,
 	cmdAllocation,
 	cmdNodes,
 	cmdHotThreads,
