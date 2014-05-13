@@ -16,7 +16,7 @@ var cmdHealth = &Command{
 `,
 }
 
-func runHealth(c *Cluster, cmd *Command, args []string) {
+func runHealth(c *Cluster, cmd *Command, args []string) error {
 	health := c.Stretch.GetHealth()
 
 	t := termtable.NewTable(&termtable.TableOptions{Padding: 1, Header: []string{"CLUSTER HEALTH", ""}})
@@ -32,4 +32,6 @@ func runHealth(c *Cluster, cmd *Command, args []string) {
 	t.AddRow([]string{"Initializing Shards", strconv.Itoa(health.InitializingShards)})
 	t.AddRow([]string{"Unassigned Shards", strconv.Itoa(health.UnassignedShards)})
 	fmt.Println(t.Render())
+
+	return nil
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -31,8 +32,9 @@ var cmdVersion = &Command{
 	Long:  `Version shows the es client version string.`,
 }
 
-func runVersion(cluster *Cluster, cmd *Command, args []string) {
+func runVersion(cluster *Cluster, cmd *Command, args []string) error {
 	fmt.Println("0.1.1")
+	return nil
 }
 
 var cmdHelp = &Command{
@@ -44,10 +46,10 @@ func init() {
 	cmdHelp.Run = runHelp // break init loop
 }
 
-func runHelp(cluster *Cluster, cmd *Command, args []string) {
+func runHelp(cluster *Cluster, cmd *Command, args []string) error {
 	if len(args) == 0 {
 		printUsage()
-		return // not os.Exit(2); success
+		return nil // not os.Exit(2); success
 	}
 	if len(args) != 1 {
 		log.Fatal("too many arguments")
@@ -56,12 +58,11 @@ func runHelp(cluster *Cluster, cmd *Command, args []string) {
 	for _, cmd := range commands {
 		if cmd.Name() == args[0] {
 			cmd.printUsage()
-			return
+			return nil
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "Unknown help topic: %q. Run 'es help'.\n", args[0])
-	os.Exit(2)
+	return errors.New(fmt.Sprintf("Unknown help topic: %q. Run 'es help'.\n", args[0]))
 }
 
 var usageTemplate = template.Must(template.New("usage").Parse(`
@@ -84,9 +85,4 @@ func printUsage() {
 		commands,
 		false,
 	})
-}
-
-func usage() {
-	printUsage()
-	os.Exit(2)
 }

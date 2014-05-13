@@ -17,7 +17,7 @@ var cluster Cluster
 
 type Command struct {
 	// args does not include the command name
-	Run  func(cluster *Cluster, cmd *Command, args []string)
+	Run  func(cluster *Cluster, cmd *Command, args []string) error
 	Flag flag.FlagSet
 
 	Usage string // first word is the command name
@@ -25,11 +25,17 @@ type Command struct {
 	Long  string // `es help cmd` output
 }
 
-func (c *Command) printUsage() {
+func (c *Command) renderUsage() (output string) {
 	if c.Runnable() {
-		fmt.Printf("Usage: es %s\n\n", c.Usage)
+		output += fmt.Sprintf("Usage: es %s\n\n", c.Usage)
 	}
-	fmt.Println(strings.Trim(c.Long, "\n"))
+	output += fmt.Sprintf(strings.Trim(c.Long, "\n"))
+
+	return
+}
+
+func (c *Command) printUsage() {
+	fmt.Println(c.renderUsage())
 }
 
 func (c *Command) Name() string {
@@ -65,6 +71,7 @@ var commands = []*Command{
 	cmdHealth,
 	cmdAllocation,
 	cmdNodes,
+	cmdHotThreads,
 }
 
 var (
@@ -78,7 +85,8 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) < 1 {
-		usage()
+		printUsage()
+		os.Exit(2)
 	}
 
 	for _, cmd := range commands {
@@ -91,7 +99,13 @@ func main() {
 				os.Exit(2)
 			}
 
-			cmd.Run(cluster, cmd, cmd.Flag.Args())
+			err := cmd.Run(cluster, cmd, cmd.Flag.Args())
+
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
 			return
 		}
 	}
