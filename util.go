@@ -4,19 +4,19 @@ import (
 	"strings"
 )
 
-func (c *Cluster) VersionNumber() string {
+func (c *Cluster) versionNumber() string {
 	return c.Stretch.GetInfo().Version.Number
 }
 
-func (c *Cluster) OhNinety() bool {
-	ver := c.VersionNumber()
+func (c *Cluster) ohNinety() bool {
+	ver := c.versionNumber()
 	segments := strings.Split(ver, ".")
 
 	return segments[0] == "0" && segments[1] == "90"
 }
 
-func (c *Cluster) One() bool {
-	ver := c.VersionNumber()
+func (c *Cluster) one() bool {
+	ver := c.versionNumber()
 	segments := strings.Split(ver, ".")
 
 	return segments[0] == "1"

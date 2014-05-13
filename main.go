@@ -9,12 +9,14 @@ import (
 	"github.com/wfarr/stretch-go"
 )
 
+// Cluster wrapper around stretch.Cluster to hide details of that type
 type Cluster struct {
 	Stretch *stretch.Cluster
 }
 
 var cluster Cluster
 
+// Command object for our CLI sub-commands
 type Command struct {
 	// args does not include the command name
 	Run  func(cluster *Cluster, cmd *Command, args []string) error
@@ -26,7 +28,7 @@ type Command struct {
 }
 
 func (c *Command) renderUsage() (output string) {
-	if c.Runnable() {
+	if c.runnable() {
 		output += fmt.Sprintf("Usage: es %s\n\n", c.Usage)
 	}
 	output += fmt.Sprintf(strings.Trim(c.Long, "\n"))
@@ -38,7 +40,7 @@ func (c *Command) printUsage() {
 	fmt.Println(c.renderUsage())
 }
 
-func (c *Command) Name() string {
+func (c *Command) name() string {
 	name := c.Usage
 	i := strings.Index(name, " ")
 	if i >= 0 {
@@ -47,21 +49,21 @@ func (c *Command) Name() string {
 	return name
 }
 
-func (c *Command) Runnable() bool {
+func (c *Command) runnable() bool {
 	return c.Run != nil
 }
 
 const extra = " (extra)"
 
-func (c *Command) List() bool {
+func (c *Command) list() bool {
 	return c.Short != "" && !strings.HasSuffix(c.Short, extra)
 }
 
-func (c *Command) ListAsExtra() bool {
+func (c *Command) listAsExtra() bool {
 	return c.Short != "" && strings.HasSuffix(c.Short, extra)
 }
 
-func (c *Command) ShortExtra() string {
+func (c *Command) shortExtra() string {
 	return c.Short[:len(c.Short)-len(extra)]
 }
 
@@ -90,7 +92,7 @@ func main() {
 	}
 
 	for _, cmd := range commands {
-		if cmd.Name() == args[0] && cmd.Run != nil {
+		if cmd.name() == args[0] && cmd.Run != nil {
 			cmd.Flag.Usage = func() {
 				cmd.printUsage()
 			}

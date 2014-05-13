@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -56,13 +55,13 @@ func runHelp(cluster *Cluster, cmd *Command, args []string) error {
 	}
 
 	for _, cmd := range commands {
-		if cmd.Name() == args[0] {
+		if cmd.name() == args[0] {
 			cmd.printUsage()
 			return nil
 		}
 	}
 
-	return errors.New(fmt.Sprintf("Unknown help topic: %q. Run 'es help'.\n", args[0]))
+	return fmt.Errorf("unknown help topic: %q. Run 'es help'.\n", args[0])
 }
 
 var usageTemplate = template.Must(template.New("usage").Parse(`
