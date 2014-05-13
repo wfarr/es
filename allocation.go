@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/wfarr/termtable"
 )
@@ -41,32 +40,20 @@ func runAllocation(c *Cluster, cmd *Command, args []string) error {
 	if len(args) == 0 {
 		settings := c.Stretch.GetSettings()
 
-		t := termtable.NewTable(&termtable.TableOptions{Padding: 1, MaxColWidth: 90, Header: []string{"SETTING TYPE", "SETTING NAME", "VALUE"}})
+		t := termtable.NewTable(&termtable.TableOptions{Padding: 1, MaxColWidth: 90, Header: []string{"SETTING NAME", "VALUE"}})
 
-		// Persistent settings
-		if settings.Persistent.ClusterRoutingAllocationDisableAllocation {
-			t.AddRow([]string{"persistent", "cluster.routing.allocation.disable_allocation", strconv.FormatBool(settings.Transient.ClusterRoutingAllocationDisableAllocation)})
+		t.AddRow([]string{"PERSISTENT SETTINGS", ""})
+
+		for key, value := range settings.Persistent {
+			t.AddRow([]string{key, value})
 		}
 
-		if settings.Persistent.ClusterRoutingAllocationDisableReplicaAllocation {
-			t.AddRow([]string{"persistent", "cluster.routing.allocation.disable_replica_allocation", strconv.FormatBool(settings.Transient.ClusterRoutingAllocationDisableReplicaAllocation)})
-		}
+		t.AddRow([]string{"", ""})
 
-		if settings.Persistent.ClusterRoutingAllocationEnable != "" {
-			t.AddRow([]string{"persistent", "cluster.routing.allocation.enable", settings.Persistent.ClusterRoutingAllocationEnable})
-		}
+		t.AddRow([]string{"TRANSIENT SETTINGS", ""})
 
-		// Transient settings
-		if settings.Transient.ClusterRoutingAllocationDisableAllocation {
-			t.AddRow([]string{"transient", "cluster.routing.allocation.disable_allocation", strconv.FormatBool(settings.Transient.ClusterRoutingAllocationDisableAllocation)})
-		}
-
-		if settings.Transient.ClusterRoutingAllocationDisableReplicaAllocation {
-			t.AddRow([]string{"transient", "cluster.routing.allocation.disable_replica_allocation", strconv.FormatBool(settings.Transient.ClusterRoutingAllocationDisableReplicaAllocation)})
-		}
-
-		if settings.Transient.ClusterRoutingAllocationEnable != "" {
-			t.AddRow([]string{"transient", "cluster.routing.allocation.enable", settings.Transient.ClusterRoutingAllocationEnable})
+		for key, value := range settings.Transient {
+			t.AddRow([]string{key, value})
 		}
 
 		fmt.Println(t.Render())
