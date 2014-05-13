@@ -1,8 +1,8 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"os"
 	"strconv"
 
 	"github.com/wfarr/termtable"
@@ -29,14 +29,13 @@ var cmdAllocation = &Command{
 `,
 }
 
-func runAllocation(c *Cluster, cmd *Command, args []string) {
+func runAllocation(c *Cluster, cmd *Command, args []string) error {
 	var settingName string
 	var settingValue interface{}
 	var foundValidValue bool
 
 	if len(args) > 1 {
-		cmd.printUsage()
-		os.Exit(1)
+		return errors.New(cmd.renderUsage())
 	}
 
 	if len(args) == 0 {
@@ -58,7 +57,7 @@ func runAllocation(c *Cluster, cmd *Command, args []string) {
 
 		fmt.Println(t.Render())
 
-		os.Exit(0)
+		return nil
 	}
 
 	if c.One() {
@@ -82,9 +81,7 @@ func runAllocation(c *Cluster, cmd *Command, args []string) {
 		}
 
 		if !foundValidValue {
-			fmt.Printf("Received an invalid setting for cluster version %v: %v\n\n", c.VersionNumber(), args[0])
-			cmd.printUsage()
-			os.Exit(1)
+			return errors.New(fmt.Sprintf("Received an invalid setting for cluster version %v: %v\n\n", c.VersionNumber(), args[0]))
 		}
 
 	} else if c.OhNinety() {
@@ -104,13 +101,10 @@ func runAllocation(c *Cluster, cmd *Command, args []string) {
 		}
 
 		if !foundValidValue {
-			fmt.Printf("Received an invalid setting for cluster version %v: %v\n\n", c.VersionNumber(), args[0])
-			cmd.printUsage()
-			os.Exit(1)
+			return errors.New(fmt.Sprintf("Received an invalid setting for cluster version %v: %v\n\n", c.VersionNumber(), args[0]))
 		}
 	} else {
-		fmt.Println("Don't know anything about this cluster version!")
-		os.Exit(1)
+		return errors.New("Don't know anything about this cluster version!")
 	}
 
 	newSettings := make(map[string]map[string]interface{})
@@ -119,9 +113,10 @@ func runAllocation(c *Cluster, cmd *Command, args []string) {
 	err := c.Stretch.SetSettings(newSettings)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return errors.New(fmt.Sprintf("Failed to update settings!\n\n%v", err))
 	}
 
 	fmt.Printf("Successfully set %v=%v\n", settingName, settingValue)
+
+	return nil
 }

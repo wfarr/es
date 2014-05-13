@@ -13,7 +13,8 @@ var cmdHotThreads = &Command{
 `,
 }
 
-func runHotThreads(c *Cluster, cmd *Command, args []string) {
+func runHotThreads(c *Cluster, cmd *Command, args []string) error {
 	hotThreads := c.Stretch.GetHotThreads()
 	fmt.Println(hotThreads)
+	return nil
 }
