@@ -1,5 +1,6 @@
 GO ?= go
 GOLINT ?= golint
+VERSION = 0.2.2
 GOPATH := $(GOPATH)
 
 #all: build
@@ -12,8 +13,8 @@ dist: clean
 	mkdir -p pkg pkg/linux-amd64 pkg/darwin-amd64
 	GOOS=darwin GOARCH=amd64 $(GO) build -o pkg/darwin-amd64/es
 	GOOS=linux GOARCH=amd64 $(GO) build -o pkg/linux-amd64/es
-	cd pkg && tar -cf es-darwin-amd64.tar.gz darwin-amd64 && cd ..
-	cd pkg && tar -cf es-linux-amd64.tar.gz linux-amd64 && cd ..
+	cd pkg && tar -cf es-${VERSION}-darwin-amd64.tar.gz darwin-amd64 && cd ..
+	cd pkg && tar -cf es-${VERSION}-linux-amd64.tar.gz linux-amd64 && cd ..
 
 test: build fmt lint
 	$(GO) test -v
