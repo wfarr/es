@@ -15,7 +15,10 @@ var cmdHotThreads = &Command{
 }
 
 func runHotThreads(c *Cluster, cmd *Command, args []string) error {
-	hotThreads := c.Stretch.GetHotThreads(args...)
+	hotThreads, err := c.Stretch.GetHotThreads(args...)
+	if err != nil {
+		return err
+	}
 
 	if strings.Trim(hotThreads, "\n") == "" {
 		return fmt.Errorf("couldn't find any nodes for %v", args)
