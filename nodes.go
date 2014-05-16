@@ -16,7 +16,11 @@ var cmdNodes = &Command{
 }
 
 func runNodes(c *Cluster, cmd *Command, args []string) error {
-	nodes := c.Stretch.GetNodes()
+	nodes, err := c.Stretch.GetNodes()
+
+	if err != nil {
+		return err
+	}
 
 	t := termtable.NewTable(&termtable.TableOptions{Padding: 1, Header: []string{"NAME", "HOSTNAME", "VERSION", "HTTP ADDRESS", "ATTRIBUTES"}})
 
