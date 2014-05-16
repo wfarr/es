@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -20,7 +21,11 @@ var cmdHealth = &Command{
 }
 
 func runHealth(c *Cluster, cmd *Command, args []string) error {
-	health := c.Stretch.GetHealth()
+	health, err := c.Stretch.GetHealth()
+
+	if err != nil {
+		return errors.New("failed to get cluster health")
+	}
 
 	if len(args) > 0 && args[0] == "index" {
 		return renderIndexHealth(health)
