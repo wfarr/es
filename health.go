@@ -24,7 +24,7 @@ func runHealth(c *Cluster, cmd *Command, args []string) error {
 	health, err := c.Stretch.GetHealth()
 
 	if err != nil {
-		return errors.New("failed to get cluster health")
+		return err
 	}
 
 	if len(args) > 0 && args[0] == "index" {
