@@ -33,7 +33,22 @@ func runAllocation(c *Cluster, cmd *Command, args []string) error {
 		return errors.New(cmd.renderUsage())
 	}
 
-	if c.one() {
+	one, err := c.one()
+	if err != nil {
+		return err
+	}
+
+	ohNinety, err := c.ohNinety()
+	if err != nil {
+		return err
+	}
+
+	versionNumber, err := c.versionNumber()
+	if err != nil {
+		return err
+	}
+
+	if one {
 		settingName = "cluster.routing.allocation.enable"
 		validValues := [...]string{"all", "primaries", "new_primaries", "none", "enable", "disable"}
 
@@ -54,10 +69,10 @@ func runAllocation(c *Cluster, cmd *Command, args []string) error {
 		}
 
 		if !foundValidValue {
-			return fmt.Errorf("received an invalid setting for cluster version %v: %v\n\n", c.versionNumber(), args[0])
+			return fmt.Errorf("received an invalid setting for cluster version %v: %v\n\n", versionNumber, args[0])
 		}
 
-	} else if c.ohNinety() {
+	} else if ohNinety {
 		settingName = "cluster.routing.allocation.disable_allocation"
 		validValues := [...]string{"enable", "disable"}
 
@@ -74,7 +89,7 @@ func runAllocation(c *Cluster, cmd *Command, args []string) error {
 		}
 
 		if !foundValidValue {
-			return fmt.Errorf("received an invalid setting for cluster version %v: %v\n\n", c.versionNumber(), args[0])
+			return fmt.Errorf("received an invalid setting for cluster version %v: %v\n\n", versionNumber, args[0])
 		}
 	} else {
 		return errors.New("don't know anything about this cluster version")
@@ -83,8 +98,8 @@ func runAllocation(c *Cluster, cmd *Command, args []string) error {
 	newSettings := make(map[string]map[string]interface{})
 	newSettings["persistent"] = make(map[string]interface{})
 	newSettings["persistent"][settingName] = settingValue
-	err := c.Stretch.SetSettings(newSettings)
 
+	err = c.Stretch.SetSettings(newSettings)
 	if err != nil {
 		return fmt.Errorf("failed to update settings!\n\n%v", err)
 	}
