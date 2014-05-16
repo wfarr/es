@@ -16,7 +16,11 @@ var cmdSettings = &Command{
 }
 
 func runSettings(c *Cluster, cmd *Command, args []string) error {
-	settings := c.Stretch.GetSettings()
+	settings, err := c.Stretch.GetSettings()
+
+	if err != nil {
+		return err
+	}
 
 	t := termtable.NewTable(&termtable.TableOptions{Padding: 1, MaxColWidth: 90, Header: []string{"SETTING NAME", "VALUE"}})
 
