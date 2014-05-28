@@ -13,6 +13,6 @@ var cmdVersion = &Command{
 }
 
 func runVersion(cluster *Cluster, cmd *Command, args []string) error {
-	fmt.Printf("es 0.3.1 (built with %v)\n", runtime.Version())
+	fmt.Printf("es 0.3.2 (built with %v)\n", runtime.Version())
 	return nil
 }
