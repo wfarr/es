@@ -1,6 +1,6 @@
 GO ?= go
 GOLINT ?= golint
-VERSION = 0.2.2
+VERSION = 0.2.3
 GOPATH := $(GOPATH)
 
 #all: build
